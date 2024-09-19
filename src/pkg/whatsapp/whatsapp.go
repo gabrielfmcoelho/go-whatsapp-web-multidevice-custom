@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/appstate"
@@ -162,6 +163,22 @@ func InitWaDB() *sqlstore.Container {
 	return storeContainer
 }
 
+func LoadProxyURL() string {
+	// Carrega as variáveis do arquivo .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Warnf("Erro ao carregar o arquivo .env: %v", err)
+	}
+
+	// Busca a variável proxy_url
+	proxyURL := os.Getenv("proxy_url")
+	if proxyURL == "" {
+		log.Warnf("A variável proxy_url não está definida no arquivo .env")
+	}
+
+	return proxyURL
+}
+
 func InitWaCLI(storeContainer *sqlstore.Container) *whatsmeow.Client {
 	device, err := storeContainer.GetFirstDevice()
 	if err != nil {
@@ -177,7 +194,8 @@ func InitWaCLI(storeContainer *sqlstore.Container) *whatsmeow.Client {
 	cli.AutoTrustIdentity = true
 	cli.AddEventHandler(handler)
 
-	proxyURL := "socks5://0b0a288b055c448171f1__cr.br:46ecbec34ae82226@gw.dataimpulse.com:823"
+	proxyURL := LoadProxyURL()
+	fmt.Println("Proxy URL:", proxyURL)
 	if err := cli.SetProxyAddress(proxyURL, whatsmeow.SetProxyOptions{
 		NoWebsocket: false, // Usa proxy para WebSocket
 		NoMedia:     false, // Usa proxy para envio/recebimento de mídia
