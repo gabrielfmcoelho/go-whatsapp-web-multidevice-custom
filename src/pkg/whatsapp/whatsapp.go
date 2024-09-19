@@ -177,7 +177,7 @@ func InitWaCLI(storeContainer *sqlstore.Container) *whatsmeow.Client {
 	cli.AutoTrustIdentity = true
 	cli.AddEventHandler(handler)
 
-	proxyURL := "socks5://ca359bf79e3c017a8486__cr.br:ca8a3e7fed8fc9c1@gw.dataimpulse.com:10000"
+	proxyURL := "socks5://0b0a288b055c448171f1__cr.br:46ecbec34ae82226@gw.dataimpulse.com:823"
 	if err := cli.SetProxyAddress(proxyURL, whatsmeow.SetProxyOptions{
 		NoWebsocket: false, // Usa proxy para WebSocket
 		NoMedia:     false, // Usa proxy para envio/recebimento de mídia
