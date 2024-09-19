@@ -12,4 +12,14 @@ services:
       dockerfile: ./docker/golang.Dockerfile
     restart: 'always'
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
+    environment:
+      - OS_NAME=${OS_NAME}
+      - BASIC_AUTH=${BASIC_AUTH}
+      - PORT=${PORT}
+      - DEBUG=${DEBUG}
+      - AUTOREPLY=${AUTOREPLY}
+      - WEBHOOK=${WEBHOOK}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+    command: >
+      --debug=${DEBUG}

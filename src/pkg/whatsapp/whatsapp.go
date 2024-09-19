@@ -16,9 +16,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/aldinokemal/go-whatsapp-web-multidevice/config"
-	"github.com/aldinokemal/go-whatsapp-web-multidevice/internal/websocket"
-	pkgError "github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/error"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"go.mau.fi/whatsmeow"
@@ -30,6 +27,10 @@ import (
 	"go.mau.fi/whatsmeow/types/events"
 	waLog "go.mau.fi/whatsmeow/util/log"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/aldinokemal/go-whatsapp-web-multidevice/config"
+	"github.com/aldinokemal/go-whatsapp-web-multidevice/internal/websocket"
+	pkgError "github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/error"
 )
 
 var (
@@ -175,6 +176,16 @@ func InitWaCLI(storeContainer *sqlstore.Container) *whatsmeow.Client {
 	cli.EnableAutoReconnect = true
 	cli.AutoTrustIdentity = true
 	cli.AddEventHandler(handler)
+
+	proxyURL := "socks5://ca359bf79e3c017a8486__cr.br:ca8a3e7fed8fc9c1@gw.dataimpulse.com:10000"
+	if err := cli.SetProxyAddress(proxyURL, whatsmeow.SetProxyOptions{
+		NoWebsocket: false, // Usa proxy para WebSocket
+		NoMedia:     false, // Usa proxy para envio/recebimento de mídia
+	}); err != nil {
+		log.Infof("error connected to proxy: %s", proxyURL, err)
+	} else {
+		log.Infof("Successfully connected to proxy: %s", proxyURL)
+	}
 
 	return cli
 }
