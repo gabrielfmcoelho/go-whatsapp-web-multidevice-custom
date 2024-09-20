@@ -171,9 +171,9 @@ func LoadProxyURL() string {
 	}
 
 	// Busca a variável proxy_url
-	proxyURL := os.Getenv("proxy_url")
+	proxyURL := os.Getenv("PROXY_URL")
 	if proxyURL == "" {
-		log.Warnf("A variável proxy_url não está definida no arquivo .env")
+		log.Warnf("A variável PROXY_URL não está definida no arquivo .env")
 	}
 
 	return proxyURL

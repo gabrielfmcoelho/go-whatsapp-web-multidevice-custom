@@ -6,7 +6,6 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
-    image: "aldinokemal2104/go-whatsapp-web-multidevice:latest"
     build:
       context: .
       dockerfile: ./docker/golang.Dockerfile
@@ -21,5 +20,6 @@ services:
       - AUTOREPLY=${AUTOREPLY}
       - WEBHOOK=${WEBHOOK}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - PROXY_URL=${PROXY_URL}
     command: >
       --debug=${DEBUG}
