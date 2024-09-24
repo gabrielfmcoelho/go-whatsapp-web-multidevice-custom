@@ -2,7 +2,7 @@ package group
 
 import (
 	"context"
-	"go.mau.fi/whatsmeow"
+	"github.com/gabrielfmcoelho/whatsmeow"
 )
 
 type IGroupService interface {

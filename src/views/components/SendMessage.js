@@ -4,6 +4,8 @@ export default {
         return {
             type: 'user',
             phone: '',
+            base_typing_delay: 2,
+            margin_typing_delay: 1,
             text: '',
             reply_message_id: '',
             loading: false,
@@ -37,6 +39,8 @@ export default {
                 const payload = {
                     phone: this.phone_id,
                     message: this.text,
+                    base_typing_delay: this.base_typing_delay,
+                    margin_typing_delay: this.margin_typing_delay,
                 }
                 if (this.reply_message_id !== '') {
                     payload.reply_message_id = this.reply_message_id;
@@ -59,6 +63,8 @@ export default {
             this.text = '';
             this.type = 'user';
             this.reply_message_id = '';
+            this.base_typing_delay = 2,
+            this.margin_typing_delay = 1
         },
     },
     template: `
@@ -92,6 +98,22 @@ export default {
                     <input v-model="phone" type="text" placeholder="6289..."
                            aria-label="phone">
                     <input :value="phone_id" disabled aria-label="whatsapp_id">
+                </div>
+                <div class="field">
+                    <label>Typing Delay</label>
+                    <p> DELAY FORMULA = {{ base_typing_delay }} + ({{ base_typing_delay }} * (RANDOM NUMBER 0-1)) + {{ margin_typing_delay }}</p>
+                    <p> MIN DELAY = {{ base_typing_delay + base_typing_delay * 0.01 + margin_typing_delay }} seconds</p>
+                    <p> MAX DELAY = {{ base_typing_delay + base_typing_delay * 1 + margin_typing_delay }} seconds</p>
+                    <div style="display: flex; gap: 10px;">
+                        <div class="field">
+                            <label>Base</label>
+                            <input v-model="base_typing_delay" type="number" placeholder="Min delay of N seconds" aria-label="base_typing_delay">
+                        </div>
+                        <div class="field">
+                            <label>Margin</label>
+                            <input v-model="margin_typing_delay" type="number" placeholder="Margin of seconds to be multiplied by a random number" aria-label="margin_typing_delay">
+                        </div>
+                    </div>      
                 </div>
                 <div class="field">
                     <label>Reply Message ID</label>

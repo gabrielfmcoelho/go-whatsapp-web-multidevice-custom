@@ -3,18 +3,19 @@ package services
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/domains/message"
 	domainMessage "github.com/aldinokemal/go-whatsapp-web-multidevice/domains/message"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/whatsapp"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/validations"
-	"go.mau.fi/whatsmeow"
-	"go.mau.fi/whatsmeow/appstate"
-	"go.mau.fi/whatsmeow/proto/waCommon"
-	"go.mau.fi/whatsmeow/proto/waE2E"
-	"go.mau.fi/whatsmeow/proto/waSyncAction"
-	"go.mau.fi/whatsmeow/types"
+	"github.com/gabrielfmcoelho/whatsmeow"
+	"github.com/gabrielfmcoelho/whatsmeow/appstate"
+	"github.com/gabrielfmcoelho/whatsmeow/proto/waCommon"
+	"github.com/gabrielfmcoelho/whatsmeow/proto/waE2E"
+	"github.com/gabrielfmcoelho/whatsmeow/proto/waSyncAction"
+	"github.com/gabrielfmcoelho/whatsmeow/types"
 	"google.golang.org/protobuf/proto"
-	"time"
 )
 
 type serviceMessage struct {
@@ -47,7 +48,7 @@ func (service serviceMessage) ReactMessage(ctx context.Context, request message.
 			SenderTimestampMS: proto.Int64(time.Now().UnixMilli()),
 		},
 	}
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 1, 1)
 	if err != nil {
 		return response, err
 	}
@@ -66,7 +67,7 @@ func (service serviceMessage) RevokeMessage(ctx context.Context, request domainM
 		return response, err
 	}
 
-	ts, err := service.WaCli.SendMessage(context.Background(), dataWaRecipient, service.WaCli.BuildRevoke(dataWaRecipient, types.EmptyJID, request.MessageID))
+	ts, err := service.WaCli.SendMessage(context.Background(), dataWaRecipient, service.WaCli.BuildRevoke(dataWaRecipient, types.EmptyJID, request.MessageID), 0, 0)
 	if err != nil {
 		return response, err
 	}
@@ -121,7 +122,7 @@ func (service serviceMessage) UpdateMessage(ctx context.Context, request domainM
 	}
 
 	msg := &waE2E.Message{Conversation: proto.String(request.Message)}
-	ts, err := service.WaCli.SendMessage(context.Background(), dataWaRecipient, service.WaCli.BuildEdit(dataWaRecipient, request.MessageID, msg))
+	ts, err := service.WaCli.SendMessage(context.Background(), dataWaRecipient, service.WaCli.BuildEdit(dataWaRecipient, request.MessageID, msg), 1, 1)
 	if err != nil {
 		return response, err
 	}

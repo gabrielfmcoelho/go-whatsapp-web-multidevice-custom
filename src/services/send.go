@@ -3,6 +3,10 @@ package services
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/exec"
+
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/config"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/domains/app"
 	domainSend "github.com/aldinokemal/go-whatsapp-web-multidevice/domains/send"
@@ -12,15 +16,12 @@ import (
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/whatsapp"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/validations"
 	"github.com/disintegration/imaging"
+	"github.com/gabrielfmcoelho/whatsmeow"
+	"github.com/gabrielfmcoelho/whatsmeow/proto/waE2E"
 	fiberUtils "github.com/gofiber/fiber/v2/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/valyala/fasthttp"
-	"go.mau.fi/whatsmeow"
-	"go.mau.fi/whatsmeow/proto/waE2E"
 	"google.golang.org/protobuf/proto"
-	"net/http"
-	"os"
-	"os/exec"
 )
 
 type serviceSend struct {
@@ -86,7 +87,15 @@ func (service serviceSend) SendText(ctx context.Context, request domainSend.Mess
 		}
 	}
 
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	// fix time.duration default of ns to s
+	// todo: fix this in the future
+	request.BaseTypingDelay = request.BaseTypingDelay * 1e9
+	request.MarginTypingDelay = request.MarginTypingDelay * 1e9
+
+	// fmt.Println("Sending message to", request.Phone, "with message", request.Message, "base typing delay", request.BaseTypingDelay.Seconds(), "margin typing delay", request.MarginTypingDelay.Seconds())
+	// fmt.Println("Request", request)
+
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, request.BaseTypingDelay, request.MarginTypingDelay)
 	if err != nil {
 		return response, err
 	}
@@ -179,7 +188,7 @@ func (service serviceSend) SendImage(ctx context.Context, request domainSend.Ima
 		FileLength:    proto.Uint64(uint64(len(dataWaImage))),
 		ViewOnce:      proto.Bool(request.ViewOnce),
 	}}
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 1, 1)
 	go func() {
 		errDelete := utils.RemoveFile(0, deletedItems...)
 		if errDelete != nil {
@@ -227,7 +236,7 @@ func (service serviceSend) SendFile(ctx context.Context, request domainSend.File
 		DirectPath:    proto.String(uploadedFile.DirectPath),
 		Caption:       proto.String(request.Caption),
 	}}
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 1, 1)
 	if err != nil {
 		return response, err
 	}
@@ -335,7 +344,7 @@ func (service serviceSend) SendVideo(ctx context.Context, request domainSend.Vid
 		ThumbnailSHA256:     dataWaThumbnail,
 		ThumbnailDirectPath: proto.String(uploaded.DirectPath),
 	}}
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 1, 1)
 	go func() {
 		errDelete := utils.RemoveFile(1, deletedItems...)
 		if errDelete != nil {
@@ -367,7 +376,7 @@ func (service serviceSend) SendContact(ctx context.Context, request domainSend.C
 		DisplayName: proto.String(request.ContactName),
 		Vcard:       proto.String(msgVCard),
 	}}
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 0, 0)
 	if err != nil {
 		return response, err
 	}
@@ -396,7 +405,7 @@ func (service serviceSend) SendLink(ctx context.Context, request domainSend.Link
 		MatchedText:  proto.String(request.Link),
 		Description:  proto.String(getMetaDataFromURL.Description),
 	}}
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 0, 0)
 	if err != nil {
 		return response, err
 	}
@@ -425,7 +434,7 @@ func (service serviceSend) SendLocation(ctx context.Context, request domainSend.
 	}
 
 	// Send WhatsApp Message Proto
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 0, 0)
 	if err != nil {
 		return response, err
 	}
@@ -466,7 +475,7 @@ func (service serviceSend) SendAudio(ctx context.Context, request domainSend.Aud
 		},
 	}
 
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg)
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, msg, 0, 0)
 	if err != nil {
 		return response, err
 	}
@@ -486,7 +495,7 @@ func (service serviceSend) SendPoll(ctx context.Context, request domainSend.Poll
 		return response, err
 	}
 
-	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, service.WaCli.BuildPollCreation(request.Question, request.Options, request.MaxAnswer))
+	ts, err := service.WaCli.SendMessage(ctx, dataWaRecipient, service.WaCli.BuildPollCreation(request.Question, request.Options, request.MaxAnswer), 1, 1)
 	if err != nil {
 		return response, err
 	}

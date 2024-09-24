@@ -1,6 +1,6 @@
 package user
 
-import "go.mau.fi/whatsmeow/types"
+import "github.com/gabrielfmcoelho/whatsmeow/types"
 
 type InfoRequest struct {
 	Phone string `json:"phone" query:"phone"`

@@ -16,17 +16,17 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/gabrielfmcoelho/whatsmeow"
+	"github.com/gabrielfmcoelho/whatsmeow/appstate"
+	"github.com/gabrielfmcoelho/whatsmeow/proto/waE2E"
+	"github.com/gabrielfmcoelho/whatsmeow/store"
+	"github.com/gabrielfmcoelho/whatsmeow/store/sqlstore"
+	"github.com/gabrielfmcoelho/whatsmeow/types"
+	"github.com/gabrielfmcoelho/whatsmeow/types/events"
+	waLog "github.com/gabrielfmcoelho/whatsmeow/util/log"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
-	"go.mau.fi/whatsmeow"
-	"go.mau.fi/whatsmeow/appstate"
-	"go.mau.fi/whatsmeow/proto/waE2E"
-	"go.mau.fi/whatsmeow/store"
-	"go.mau.fi/whatsmeow/store/sqlstore"
-	"go.mau.fi/whatsmeow/types"
-	"go.mau.fi/whatsmeow/types/events"
-	waLog "go.mau.fi/whatsmeow/util/log"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/config"
@@ -284,7 +284,7 @@ func handler(rawEvt interface{}) {
 		if config.WhatsappAutoReplyMessage != "" &&
 			!isGroupJid(evt.Info.Chat.String()) &&
 			!strings.Contains(evt.Info.SourceString(), "broadcast") {
-			_, _ = cli.SendMessage(context.Background(), evt.Info.Sender, &waE2E.Message{Conversation: proto.String(config.WhatsappAutoReplyMessage)})
+			_, _ = cli.SendMessage(context.Background(), evt.Info.Sender, &waE2E.Message{Conversation: proto.String(config.WhatsappAutoReplyMessage)}, 0, 0)
 		}
 
 		if config.WhatsappWebhook != "" &&

@@ -5,8 +5,8 @@ import (
 	domainGroup "github.com/aldinokemal/go-whatsapp-web-multidevice/domains/group"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/utils"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/whatsapp"
+	"github.com/gabrielfmcoelho/whatsmeow"
 	"github.com/gofiber/fiber/v2"
-	"go.mau.fi/whatsmeow"
 )
 
 type Group struct {

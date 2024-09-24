@@ -7,8 +7,8 @@ import (
 	pkgError "github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/error"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/pkg/whatsapp"
 	"github.com/aldinokemal/go-whatsapp-web-multidevice/validations"
-	"go.mau.fi/whatsmeow"
-	"go.mau.fi/whatsmeow/types"
+	"github.com/gabrielfmcoelho/whatsmeow"
+	"github.com/gabrielfmcoelho/whatsmeow/types"
 )
 
 type groupService struct {

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"go.mau.fi/whatsmeow/proto/waCompanionReg"
+	"github.com/gabrielfmcoelho/whatsmeow/proto/waCompanionReg"
 )
 
 var (
