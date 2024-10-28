@@ -1,5 +1,6 @@
 services:
   whatsapp_go:
+    container_name: whatsapp_go
     logging:
       driver: "json-file"
       options:
