@@ -53,6 +53,16 @@ func init() {
 }
 
 func runRest(_ *cobra.Command, _ []string) {
+	fmt.Println("Starting with the following configuration:")
+	fmt.Printf("Port: %s\n", config.AppPort)
+	fmt.Printf("Debug: %t\n", config.AppDebug)
+	fmt.Printf("OS: %s\n", config.AppOs)
+	fmt.Printf("Basic Auth Credential: %s\n", config.AppBasicAuthCredential)
+	fmt.Printf("Auto Reply Message: %s\n", config.WhatsappAutoReplyMessage)
+	fmt.Printf("Webhook URL: %s\n", config.WhatsappWebhook)
+	fmt.Printf("Webhook Secret: %s\n", config.WhatsappWebhookSecret)
+	fmt.Printf("Account Validation: %t\n", config.WhatsappAccountValidation)
+
 	if config.AppDebug {
 		config.WhatsappLogLevel = "DEBUG"
 	}

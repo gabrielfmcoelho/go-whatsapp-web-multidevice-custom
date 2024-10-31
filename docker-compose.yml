@@ -1,15 +1,23 @@
-version: '3.9'
 services:
   whatsapp_go:
+    container_name: whatsapp_go
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
-    image: "aldinokemal2104/go-whatsapp-web-multidevice:latest"
+    # image: "aldinokemal2104/go-whatsapp-web-multidevice:latest"
     build:
       context: .
-      dockerfile: ./docker/golang.Dockerfile
+      dockerfile: ./docker/golang.original.Dockerfile
     restart: 'always'
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"  # Ensure PORT is defined in .env or as an environment variable
+    command: 
+      - "--os=${OS_NAME}"
+      - "--port=${PORT}"
+      - "--debug=${DEBUG}"
+      - "--autoreply=${AUTOREPLY}"
+      - "--webhook=${WEBHOOK}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # For Docker 20.10.0 or newer, Linux only
